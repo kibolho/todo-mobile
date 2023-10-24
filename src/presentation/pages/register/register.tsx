@@ -1,33 +1,31 @@
+import { SIGN_UP } from "@/data/graphql/mutations";
 import { Validation } from "@/presentation/protocols";
+import { useMutation } from "@apollo/client";
+import { Entypo } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
 import {
   Box,
-  Text,
-  Heading,
-  VStack,
-  FormControl,
-  Input,
-  Link,
   Button,
-  HStack,
   Center,
-  Pressable,
-  WarningOutlineIcon,
+  FormControl,
+  HStack,
+  Heading,
   Icon,
+  Input,
+  Pressable,
+  Text,
   Toast,
+  VStack,
+  WarningOutlineIcon
 } from "native-base";
-import { Entypo } from "@expo/vector-icons";
-import { useSession } from "@/presentation/hooks/use-session";
-import { useMutation } from "@apollo/client";
-import { SIGN_IN } from "@/data/graphql/mutations";
-import { Linking, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { TouchableOpacity } from "react-native";
 
 type Props = {
   validation: Validation;
 };
 
-const Login: React.FC<Props> = ({ validation }: Props) => {
+const Register: React.FC<Props> = ({ validation }: Props) => {
   const [state, setState] = useState({
     email: "",
     emailError: null,
@@ -38,11 +36,9 @@ const Login: React.FC<Props> = ({ validation }: Props) => {
     isFormInvalid: false,
   });
 
-  const [signIn] = useMutation(SIGN_IN);
+  const [signUp] = useMutation(SIGN_UP);
 
-  const { setCurrentAccount } = useSession();
-
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
       if (state.isLoading || state.isFormInvalid) {
         return;
@@ -51,16 +47,20 @@ const Login: React.FC<Props> = ({ validation }: Props) => {
         ...old,
         isLoading: true,
       }));
-      const account = await signIn({
+      await signUp({
         variables: {
-          signinUserInput: {
+          signupUserInput: {
             username: state.email,
             password: state.password,
           },
         },
       });
-      setCurrentAccount(account.data.signin);
-      router.replace("/(app)");
+      Toast.show({
+        title: "Success!",
+        description: "User created",
+        duration: 5000,
+      });
+      router.replace("/sign-in");
     } catch (error) {
       Toast.show({
         title: "Ops!",
@@ -118,7 +118,7 @@ const Login: React.FC<Props> = ({ validation }: Props) => {
           fontWeight="medium"
           size="xs"
         >
-          Sign in to continue!
+          Sign up to continue!
         </Heading>
 
         <VStack space={3} mt="5">
@@ -178,26 +178,15 @@ const Login: React.FC<Props> = ({ validation }: Props) => {
             >
               {state.passwordError}
             </FormControl.ErrorMessage>
-            <Link
-              _text={{
-                fontSize: "xs",
-                fontWeight: "500",
-                color: "emerald.400",
-              }}
-              alignSelf="flex-end"
-              mt="1"
-            >
-              Forget Password?
-            </Link>
           </FormControl>
           <Button
             testID="submit-login"
             isLoading={state.isLoading}
             mt="2"
             colorScheme="emerald"
-            onPress={handleLogin}
+            onPress={handleRegister}
           >
-            Sign in
+            Sign up
           </Button>
           <HStack mt="6" justifyContent="center">
             <Text
@@ -207,15 +196,15 @@ const Login: React.FC<Props> = ({ validation }: Props) => {
                 color: "warmGray.200",
               }}
             >
-              I'm a new user.{" "}
+              I'm a registered user.{" "}
             </Text>
             <TouchableOpacity
               onPress={() => {
-                router.replace("sign-up");
+                router.replace("sign-in");
               }}
             >
               <Text color={"emerald.400"} fontWeight={"medium"} fontSize={"sm"}>
-                Sign Up
+                Sign In
               </Text>
             </TouchableOpacity>
           </HStack>
@@ -225,4 +214,4 @@ const Login: React.FC<Props> = ({ validation }: Props) => {
   );
 };
 
-export default Login;
+export default Register;

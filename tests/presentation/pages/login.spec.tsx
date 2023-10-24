@@ -1,33 +1,22 @@
 import { LoginPage } from "@/presentation/pages";
-import { AuthenticationSpy } from "@/tests/domain/mocks";
 import {
   ValidationStub,
   fakeEmail,
   fakePassword,
 } from "@/tests/presentation/mocks";
 
-import { IAccountModel } from "@/domain/models";
-import {
-  RenderResult,
-  fireEvent,
-  render,
-  screen,
-} from "@testing-library/react-native";
 import { Providers } from "@/presentation/providers/providers";
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
-type SutTypes = {
-  authenticationSpy: AuthenticationSpy;
-};
+type SutTypes = {};
 
 type SutParams = {
   validationError?: string;
-  account?: IAccountModel;
 };
 
 const makeSut = (params?: SutParams): SutTypes => {
   const validationStub = new ValidationStub();
   validationStub.errorMessage = params?.validationError;
-  const authenticationSpy = new AuthenticationSpy();
 
   const inset = {
     frame: { x: 0, y: 0, width: 0, height: 0 },
@@ -36,23 +25,20 @@ const makeSut = (params?: SutParams): SutTypes => {
 
   render(
     <Providers inset={inset}>
-      <LoginPage
-        validation={validationStub}
-        authentication={authenticationSpy}
-      />
+      <LoginPage validation={validationStub} />
     </Providers>
   );
-  return {
-    authenticationSpy,
-  };
+  return {};
 };
 
 const simulateValidSubmit = async (
   email = fakeEmail,
   password = fakePassword
 ): Promise<void> => {
-  const submit = screen.getByTestId("submit-login");
-  fireEvent.press(submit);
+  act(() => {
+    const submit = screen.getByTestId("submit-login");
+    fireEvent.press(submit);
+  });
 };
 
 describe("Login Component", () => {

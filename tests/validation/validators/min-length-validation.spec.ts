@@ -13,7 +13,7 @@ describe("MinLengthValidation", () => {
 
     const error = sut.validate({ [field]: faker.word.sample({ length: 4 }) });
 
-    expect(error).toEqual(new InvalidFieldError());
+    expect(error).toEqual(new InvalidFieldError("Minimum length is 5"));
   });
 
   test("Should return falsy if value is valid", () => {

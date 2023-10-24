@@ -1,5 +1,5 @@
-import { Authentication } from "@/domain/usecases";
 import { useSession } from "@/presentation/hooks/use-session";
+import { useApolloClient } from "@apollo/client";
 import { router } from "expo-router";
 import { Box, HStack, Heading, Link, VStack } from "native-base";
 import React from "react";
@@ -7,20 +7,19 @@ import React from "react";
 interface Props {
   title?: string;
   description?: string;
-  authentication: Authentication;
 }
 
 export const Header: React.FC<Props> = ({
   title = "Todo",
   description = "Keep track of your todo list.",
-  authentication,
 }) => {
   const { setCurrentAccount } = useSession();
+  const client = useApolloClient();
 
   const logout = async () => {
     router.replace("/sign-in");
-    await authentication.logout();
     setCurrentAccount(null);
+    await client.clearStore();
   };
 
   return (

@@ -1,6 +1,5 @@
 import { GraphQLProvider } from "@/infra/graphql";
 import { SessionProvider } from "@/presentation/hooks/use-session";
-import { ApolloProvider } from '@apollo/client';
 import { NativeBaseProvider } from "native-base";
 import { PropsWithChildren } from "react";
 

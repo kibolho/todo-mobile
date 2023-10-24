@@ -1,10 +1,10 @@
 import React from "react";
 import { useStorageState } from "./use-storage";
-import { IAccountModel } from "@/domain/models";
+import { IUser } from "@/domain/models";
 
 const AuthContext = React.createContext<{
   setCurrentAccount: (account) => void;
-  session?: IAccountModel | null;
+  session?: IUser | null;
   isLoading: boolean;
 } | null>(null);
 
@@ -21,9 +21,7 @@ export function useSession() {
 }
 
 export function SessionProvider(props) {
-  const [[isLoading, session], setSession] =
-    useStorageState<IAccountModel>("account");
-
+  const [[isLoading, session], setSession] = useStorageState<IUser>("session");
   return (
     <AuthContext.Provider
       value={{

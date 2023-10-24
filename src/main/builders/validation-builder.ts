@@ -8,7 +8,9 @@ import {
   WordsValidation,
   NumberValidation,
   DateValidation,
+  PasswordValidation,
 } from "@/validation/validators";
+import { MaxLengthValidation } from "@/validation/validators/max-length-validation";
 
 export class ValidationBuilder {
   private constructor(
@@ -30,8 +32,18 @@ export class ValidationBuilder {
     return this;
   }
 
+  password(): ValidationBuilder {
+    this.validations.push(new PasswordValidation(this.fieldName));
+    return this;
+  }
+
   min(length: number): ValidationBuilder {
     this.validations.push(new MinLengthValidation(this.fieldName, length));
+    return this;
+  }
+
+  max(length: number): ValidationBuilder {
+    this.validations.push(new MaxLengthValidation(this.fieldName, length));
     return this;
   }
 

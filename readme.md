@@ -4,20 +4,20 @@
 
 ### Installation
 
-`npm install`
+`yarn`
 
 ### Run Development IOS
 
-`npm run ios`
+`yarn ios`
 
 ### Run Development Android
 
-`npm run android`
+`yarn android`
 
 ### Requirements
 
 Node.js v16+
-npm
+yarn
 Expo CLI
 Xcode
 Iphone Simulator

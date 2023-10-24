@@ -1,4 +1,4 @@
 import { LocalSecureStorageAdapter } from "@/infra/cache";
 
-export const makeLocalSecureStorageAdapter = (): LocalSecureStorageAdapter =>
+export const makeLocalSecureStorageAdapter =
   new LocalSecureStorageAdapter();

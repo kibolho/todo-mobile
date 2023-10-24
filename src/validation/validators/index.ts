@@ -6,3 +6,4 @@ export * from "./number-validation";
 export * from "./required-field-validation";
 export * from "./words-validation";
 export * from "./date-validation";
+export * from "./password-validation"

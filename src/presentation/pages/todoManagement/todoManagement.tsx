@@ -5,7 +5,6 @@ import {
 } from "@/data/graphql/mutations";
 import { LIST_TODOS } from "@/data/graphql/queries";
 import { ITodo } from "@/data/models/todo";
-import { Authentication } from "@/domain/usecases";
 import { Header } from "@/presentation/components";
 import { Validation } from "@/presentation/protocols";
 import { gql, useMutation, useQuery } from "@apollo/client";
@@ -25,25 +24,29 @@ import {
   WarningOutlineIcon,
 } from "native-base";
 import { useEffect, useState } from "react";
+import { RefreshControl } from "react-native";
 
 interface Props {
   validation: Validation;
-  authentication: Authentication;
 }
 
-const TodoManagement: React.FC<Props> = ({ validation, authentication }) => {
+const TodoManagement: React.FC<Props> = ({ validation }) => {
   const [state, setState] = useState({
     title: "",
     titleError: null,
   });
 
-  const { data } = useQuery<{ todos: ITodo[] }>(LIST_TODOS);
+  const {
+    data,
+    refetch: onRefreshTodos,
+    loading,
+  } = useQuery<{ getAllTodos: ITodo[] }>(LIST_TODOS);
 
   const [createTodo, { loading: isCreating }] = useMutation(CREATE_TODO, {
     update(cache, { data: { createTodo } }) {
       cache.modify({
         fields: {
-          todos(existingTodos = []) {
+          getAllTodos(existingTodos = []) {
             const newTodoRef = cache.writeFragment({
               data: createTodo,
               fragment: gql`
@@ -65,7 +68,7 @@ const TodoManagement: React.FC<Props> = ({ validation, authentication }) => {
     update(cache, { data: { deleteTodo } }) {
       cache.modify({
         fields: {
-          todos(existingTodos = [], { readField }) {
+          getAllTodos(existingTodos = [], { readField }) {
             return existingTodos.filter(
               (todoRef) => deleteTodo.id !== readField("id", todoRef)
             );
@@ -114,13 +117,20 @@ const TodoManagement: React.FC<Props> = ({ validation, authentication }) => {
   return (
     <Center safeArea flex={1}>
       <VStack space={4} flex={1} w="90%" mt={4}>
-        <Header authentication={authentication} />
+        <Header />
         <FormControl isRequired isInvalid={!!state.titleError}>
           <Input
             variant="filled"
             InputRightElement={
               isCreating ? (
-                <Spinner accessibilityLabel="Loading creation" />
+                <HStack justifyContent="center">
+                  <Spinner
+                    marginY={4}
+                    mr={5}
+                    size={5}
+                    accessibilityLabel="Loading creation"
+                  />
+                </HStack>
               ) : (
                 <IconButton
                   icon={<Icon as={FontAwesome5} name="plus" size={4} />}
@@ -144,9 +154,30 @@ const TodoManagement: React.FC<Props> = ({ validation, authentication }) => {
             {state.titleError}
           </FormControl.ErrorMessage>
         </FormControl>
-        <VStack>
+        <VStack flex={1}>
           <FlatList
-            data={data?.todos}
+            data={data?.getAllTodos}
+            refreshControl={
+              <RefreshControl refreshing={loading} onRefresh={onRefreshTodos} />
+            }
+            ListEmptyComponent={() => {
+              return (
+                <HStack justifyContent="center" alignItems="center">
+                  <Text
+                    textAlign="left"
+                    mx="2"
+                    _light={{
+                      color: "coolGray.800",
+                    }}
+                    _dark={{
+                      color: "coolGray.50",
+                    }}
+                  >
+                    No todo added
+                  </Text>
+                </HStack>
+              );
+            }}
             renderItem={({ item, index }) => {
               return (
                 <HStack

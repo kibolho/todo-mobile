@@ -1,10 +1,10 @@
-import { makeLocalSecureStorageAdapter } from "@/main/factories/cache";
 import * as React from "react";
+import { makeLocalSecureStorageAdapter } from "@/main/factories/cache";
 import { Platform } from "react-native";
 
 type UseStateHook<T> = [[boolean, T | null], (value?: T | null) => void];
 
-const SecureStore = makeLocalSecureStorageAdapter();
+const SecureStore = makeLocalSecureStorageAdapter;
 
 function useAsyncState<T>(
   initialValue: [boolean, T | null] = [true, undefined]

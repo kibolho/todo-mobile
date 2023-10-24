@@ -1,9 +1,29 @@
 import { CONSTANTS_ENV } from "@/constants";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { IUser } from "@/domain/models";
+import { makeLocalSecureStorageAdapter } from "@/main/factories/cache";
+import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
+import { setContext } from '@apollo/client/link/context';
+
+const SecureStore = makeLocalSecureStorageAdapter;
+
+const httpLink = createHttpLink({
+  uri: CONSTANTS_ENV.API_BASE_URL,
+});
+
+const authLink = setContext(async (_, { headers }) => {
+  const account: IUser = await SecureStore.get('session');
+  const token = account?.access_token
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    }
+  }
+});
 
 // Initialize Apollo Client
 const client = new ApolloClient({
-  uri: CONSTANTS_ENV.API_BASE_URL,
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
