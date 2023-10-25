@@ -1,3 +1,4 @@
+import { Mutation } from "@/data/graphql/generated/graphql";
 import { SIGN_UP } from "@/data/graphql/mutations";
 import { Validation } from "@/presentation/protocols";
 import { useMutation } from "@apollo/client";
@@ -36,7 +37,7 @@ const Register: React.FC<Props> = ({ validation }: Props) => {
     isFormInvalid: false,
   });
 
-  const [signUp] = useMutation(SIGN_UP);
+  const [signUp] = useMutation<Pick<Mutation,"signup">>(SIGN_UP);
 
   const handleRegister = async () => {
     try {

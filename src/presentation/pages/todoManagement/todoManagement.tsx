@@ -1,10 +1,10 @@
+import { Mutation, Query } from "@/data/graphql/generated/graphql";
 import {
   CREATE_TODO,
   DELETE_TODO,
   UPDATE_TODO,
 } from "@/data/graphql/mutations";
 import { LIST_TODOS } from "@/data/graphql/queries";
-import { ITodo } from "@/data/models/todo";
 import { Header } from "@/presentation/components";
 import { Validation } from "@/presentation/protocols";
 import { gql, useMutation, useQuery } from "@apollo/client";
@@ -40,9 +40,9 @@ const TodoManagement: React.FC<Props> = ({ validation }) => {
     data,
     refetch: onRefreshTodos,
     loading,
-  } = useQuery<{ getAllTodos: ITodo[] }>(LIST_TODOS);
+  } = useQuery<Pick<Query, "getAllTodos">>(LIST_TODOS);
 
-  const [createTodo, { loading: isCreating }] = useMutation(CREATE_TODO, {
+  const [createTodo, { loading: isCreating }] = useMutation<Pick<Mutation,"createTodo">>(CREATE_TODO, {
     update(cache, { data: { createTodo } }) {
       cache.modify({
         fields: {
@@ -64,7 +64,7 @@ const TodoManagement: React.FC<Props> = ({ validation }) => {
     },
   });
 
-  const [deleteTodo] = useMutation(DELETE_TODO, {
+  const [deleteTodo] = useMutation<Pick<Mutation,"deleteTodo">>(DELETE_TODO, {
     update(cache, { data: { deleteTodo } }) {
       cache.modify({
         fields: {
@@ -78,7 +78,7 @@ const TodoManagement: React.FC<Props> = ({ validation }) => {
     },
   });
 
-  const [updateTodo] = useMutation(UPDATE_TODO);
+  const [updateTodo] = useMutation<Pick<Mutation,"updateTodo">>(UPDATE_TODO);
 
   useEffect(() => {
     validate("title");
@@ -102,7 +102,7 @@ const TodoManagement: React.FC<Props> = ({ validation }) => {
     });
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     await deleteTodo({
       variables: { id },
     });

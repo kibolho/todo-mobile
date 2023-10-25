@@ -1,0 +1,9 @@
+overwrite: true
+schema: http://localhost:3000/graphql
+generates:
+  src/data/graphql/generated/graphql.tsx:
+    plugins:
+      - typescript
+      - typescript-react-apollo
+    config:
+      withHooks: true

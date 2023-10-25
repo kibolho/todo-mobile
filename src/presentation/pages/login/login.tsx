@@ -22,6 +22,7 @@ import { useSession } from "@/presentation/hooks/use-session";
 import { useMutation } from "@apollo/client";
 import { SIGN_IN } from "@/data/graphql/mutations";
 import { Linking, TouchableOpacity } from "react-native";
+import { Mutation } from "@/data/graphql/generated/graphql";
 
 type Props = {
   validation: Validation;
@@ -38,7 +39,7 @@ const Login: React.FC<Props> = ({ validation }: Props) => {
     isFormInvalid: false,
   });
 
-  const [signIn] = useMutation(SIGN_IN);
+  const [signIn] = useMutation<Pick<Mutation,"signin">>(SIGN_IN);
 
   const { setCurrentAccount } = useSession();
 
